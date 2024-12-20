@@ -1,8 +1,8 @@
 package com.worgle.worgle
 
 import android.content.Context
+import android.util.Log
 import com.worgle.worgle.data.fetchRandomWordFromApi
-import com.worgle.worgle.network.WorgleApi
 import kotlinx.coroutines.runBlocking
 
 object WorgleStorage {
@@ -14,6 +14,9 @@ object WorgleStorage {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedDate = prefs.getString(KEY_DATE, "")
         val todayDate = java.time.LocalDate.now().toString()
+
+        Log.d("WorgleStorage", "savedDate: $savedDate, todayDate: $todayDate")
+        Log.d("WorgleStorage", "savedWord: ${prefs.getString(KEY_WORD, "")}")
 
         return if (savedDate != todayDate) {
             val newWord = runBlocking { fetchRandomWordFromApi(apiKey) } ?: "단어 없음"

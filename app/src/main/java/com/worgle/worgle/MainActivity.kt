@@ -34,14 +34,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             WorgleWorgleTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val viewModel = WorgleViewModel(LocalContext.current, MyApi.API_KEY)
+                WorgleScreen(viewModel = viewModel)
             }
         }
     }
@@ -61,6 +58,7 @@ fun WorgleScreen(viewModel: WorgleViewModel = WorgleViewModel(LocalContext.curre
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text("🤪 워글워글 🤪", style = MaterialTheme.typography.headlineLarge)
+        Text("오늘의 단어: $todayWord", style = MaterialTheme.typography.bodySmall)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -77,7 +75,7 @@ fun WorgleScreen(viewModel: WorgleViewModel = WorgleViewModel(LocalContext.curre
             Button(
                 onClick = {
                     similarity = calculateSimilarity(userInput, todayWord)
-                    result = if (userInput.equals(todayWord)) "정답입니다!🎉" else "오답입니다!😩"
+                    result = if (userInput == todayWord) "정답입니다!🎉" else "오답입니다!😩"
                 },
                 modifier = Modifier.size(80.dp, 48.dp)
             ) {
@@ -97,22 +95,23 @@ fun WorgleScreen(viewModel: WorgleViewModel = WorgleViewModel(LocalContext.curre
 
 fun calculateSimilarity(userInput: String, todayWord: String): Int {
     // TODO: 유사도 계산 알고리즘 구현 or 외부 라이브러리 사용
-    return 0
-}
+    val len1 = userInput.length
+    val len2 = todayWord.length
 
+    val dp = Array(len1 + 1) { IntArray(len2 + 1) }
+    for (i in 0..len1) dp[i][0] = i
+    for (j in 0..len2) dp[0][j] = j
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WorgleWorgleTheme {
-        WorgleScreen()
+    for (i in 1..len1) {
+        for (j in 1..len2) {
+            dp[i][j] = if (userInput[i - 1] == todayWord[j - 1]) {
+                dp[i - 1][j - 1]
+            } else {
+                1 + minOf(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+            }
+        }
     }
+
+    val maxLength = maxOf(len1, len2)
+    return ((1 - dp[len1][len2].toDouble() / maxLength) * 100).toInt()
 }
