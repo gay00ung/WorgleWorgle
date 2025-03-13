@@ -8,10 +8,11 @@ interface WorgleApi {
     @GET("api/search")
     suspend fun getRandomWord(
         @Query("key") apiKey: String,
-        @Query("q") query: String, // 검색어
-        @Query("req_type") reqType: String = "xml",
-        @Query("num") num: Int = 1, // 단어 수
-        @Query("advanced") advanced: Int = 1, // 고급 검색
-        @Query("sort") sort: String = "popular" // 인기순
+        @Query("q") query: String,
+        @Query("num") num: Int = 100,
+        @Query("part") part: String = "word",
+        @Query("translated") translated: String = "n",
+        @Query("advanced") advanced: String = "n",
+        @Query("method") method: String = "include"
     ): WordleResponse
 }

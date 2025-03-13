@@ -2,8 +2,6 @@ package com.worgle.worgle
 
 import android.content.Context
 import android.util.Log
-import com.worgle.worgle.data.fetchRandomWordFromApi
-import com.worgle.worgle.network.MyApi
 import kotlinx.coroutines.runBlocking
 
 object WorgleStorage {
