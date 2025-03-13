@@ -1,33 +1,24 @@
 package com.worgle.worgle
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.worgle.worgle.data.RetrofitInstance
 import com.worgle.worgle.network.MyApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class WorgleViewModel(private val context: Context, private val apiKey: String): ViewModel() {
-    val todayWord: String by lazy { WorgleStorage.getTodayWord(context, apiKey) }
+    private val _todayWord = MutableStateFlow<String?>(null)
+    val todayWord: StateFlow<String?> get() = _todayWord
 
-//    var word: String = ""
-//
-//    fun getRandomWord() {
-//        viewModelScope.launch {
-//            try {
-//                val response = withContext(Dispatchers.IO) {
-//                    RetrofitInstance.worgleApi.getRandomWord(apiKey, "")
-//                }
-//                val randomItem = response.items?.firstOrNull()
-//                if (randomItem != null) {
-//                    word = randomItem.word ?: "알 수 없는 단어입니다."
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//                word = "단어를 가져오는데 실패했습니다."
-//            }
-//        }
-//    }
+    fun fetchTodayWord() {
+        viewModelScope.launch {
+            _todayWord.value = WorgleStorage.getTodayWord(context, apiKey)
+        }
+    }
 }

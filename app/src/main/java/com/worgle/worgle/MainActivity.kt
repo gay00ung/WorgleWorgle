@@ -44,57 +44,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun WorgleScreen(viewModel: WorgleViewModel = WorgleViewModel(LocalContext.current, MyApi.API_KEY)) {
-    val todayWord = viewModel.todayWord
-    var userInput by remember { mutableStateOf("") }
-    var similarity by remember { mutableIntStateOf(0) }
-    var result by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text("🤪 워글워글 🤪", style = MaterialTheme.typography.headlineLarge)
-        Text("오늘의 단어: $todayWord", style = MaterialTheme.typography.bodySmall)
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TextField(
-                value = userInput,
-                onValueChange = { userInput = it },
-                label = { Text("단어를 입력하세요!") },
-                modifier = Modifier.weight(1f)
-            )
-
-            Button(
-                onClick = {
-                    similarity = calculateSimilarity(userInput, todayWord)
-                    result = if (userInput == todayWord) "정답입니다!🎉" else "오답입니다!😩"
-                },
-                modifier = Modifier.size(80.dp, 48.dp)
-            ) {
-                Text("입력", style = MaterialTheme.typography.bodySmall)
-            }
-        }
-
-        if(similarity != 0) {
-            if (similarity < 50) {
-                Text("유사도는 $similarity 입니다.", color = Color.Red)
-            } else {
-                Text("유사도는 $similarity 입니다.", color = Color.Blue)
-            }
-        }
-    }
-}
-
 fun calculateSimilarity(userInput: String, todayWord: String): Int {
-    // TODO: 유사도 계산 알고리즘 구현 or 외부 라이브러리 사용
     val len1 = userInput.length
     val len2 = todayWord.length
 
