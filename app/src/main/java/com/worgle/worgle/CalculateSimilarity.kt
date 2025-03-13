@@ -1,23 +1,33 @@
 package com.worgle.worgle
 
 fun calculateSimilarity(userInput: String, todayWord: String): Int {
-    val len1 = userInput.length
-    val len2 = todayWord.length
+    val s = userInput.lowercase().trim()
+    val t = todayWord.lowercase().trim()
+    if (s.isEmpty() && t.isEmpty()) return 100
+    if (s.isEmpty() || t.isEmpty()) return 0
+    val distance = levenshteinDistance(s, t)
+    val maxLen = maxOf(s.length, t.length)
+    val similarity = (1 - distance.toFloat() / maxLen) * 100
+    return similarity.toInt().coerceIn(0, 100)
+}
 
-    val dp = Array(len1 + 1) { IntArray(len2 + 1) }
-    for (i in 0..len1) dp[i][0] = i
-    for (j in 0..len2) dp[0][j] = j
-
-    for (i in 1..len1) {
-        for (j in 1..len2) {
-            dp[i][j] = if (userInput[i - 1] == todayWord[j - 1]) {
-                dp[i - 1][j - 1]
-            } else {
-                1 + minOf(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
-            }
+fun levenshteinDistance(a: String, b: String): Int {
+    val n = a.length
+    val m = b.length
+    if (n == 0) return m
+    if (m == 0) return n
+    val dp = Array(n + 1) { IntArray(m + 1) }
+    for (i in 0..n) {
+        dp[i][0] = i
+    }
+    for (j in 0..m) {
+        dp[0][j] = j
+    }
+    for (i in 1..n) {
+        for (j in 1..m) {
+            val cost = if (a[i - 1] == b[j - 1]) 0 else 1
+            dp[i][j] = minOf(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
         }
     }
-
-    val maxLength = maxOf(len1, len2)
-    return ((1 - dp[len1][len2].toDouble() / maxLength) * 100).toInt()
+    return dp[n][m]
 }

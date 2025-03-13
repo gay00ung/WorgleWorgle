@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 
 suspend fun fetchRandomWordFromApi(apiKey: String): String? {
     return withContext(Dispatchers.IO) {
-//        while (true) {
+        while (true) {
             try {
                 val randomChar = getRandomKoreanChar()
                 Log.d("WorgleStorage", "Random Korean char: randomChar")
@@ -30,7 +30,7 @@ suspend fun fetchRandomWordFromApi(apiKey: String): String? {
                 e.printStackTrace()
                 Log.d("WorgleStorage", "Failed to fetch random word", e)
             }
-//        }
+        }
         null
     }
 }
